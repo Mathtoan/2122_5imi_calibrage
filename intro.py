@@ -1,4 +1,3 @@
-import numpy as np
 import itk, os
 
 # ----------------------
@@ -12,8 +11,7 @@ if not(os.path.exists(image_output_dir)):
 
 input_filename = os.path.join(image_dir, 'brain.png')
 image = itk.imread(input_filename)
-ImageType = type(image)
-# On récupère le type de l'image
+ImageType = type(image) # On récupère le type de l'image
 
 # ----------------------
 # Création et paramétrage du filtre
@@ -33,3 +31,7 @@ smoothFilter.SetSigma(sigma) # On sélectionne la variance du filtre
 itk.imwrite(smoothFilter.GetOutput(), os.path.join(image_output_dir,'brain_smoothed.png')) # On écrit sur le disque la sortie du filtre Gaussien
 
 itk.imwrite(itk.AbsoluteValueDifferenceImageFilter(smoothFilter.GetOutput(), image), os.path.join(image_output_dir,'brain_diff.png'))
+
+
+
+optimizer = itk.RegularStepGradientDescentOptimizer.New() # Instance de la classe d'optimiseur choisie
