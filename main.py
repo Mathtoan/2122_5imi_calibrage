@@ -5,6 +5,11 @@ import itk, os
 # Lecture de l'image
 # ----------------------
 image_dir = 'images'
+
+image_output_dir = os.path.join(image_dir, 'output')
+if not(os.path.exists(image_output_dir)):
+    os.makedirs(image_output_dir)
+
 input_filename = os.path.join(image_dir, 'brain.png')
 image = itk.imread(input_filename)
 ImageType = type(image)
@@ -24,4 +29,7 @@ smoothFilter.SetSigma(sigma) # On sélectionne la variance du filtre
 # ----------------------
 # Écriture de la sortie du filtre
 # ----------------------
-itk.imwrite(smoothFilter.GetOutput(), os.path.join(image_dir,'myImage_smoothed.png')) # On écrit sur le disque la sortie du filtre Gaussien
+
+itk.imwrite(smoothFilter.GetOutput(), os.path.join(image_output_dir,'brain_smoothed.png')) # On écrit sur le disque la sortie du filtre Gaussien
+
+itk.imwrite(itk.AbsoluteValueDifferenceImageFilter(smoothFilter.GetOutput(), image), os.path.join(image_output_dir,'brain_diff.png'))
