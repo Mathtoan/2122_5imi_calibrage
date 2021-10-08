@@ -29,20 +29,20 @@ moving_image_type = type(moving_image) # On récupère le type de l'image transl
 # Optimiseur
 # ----------------------
 optimizer = itk.RegularStepGradientDescentOptimizer.New() # Instance de la classe d'optimiseur choisie
-optimizer.SetMaximumStepLength(4.)
-optimizer.SetMinimumStepLength(.01)
-optimizer.SetNumberOfIterations(200)
-
+optimizer.SetMaximumStepLength(.1)
+optimizer.SetMinimumStepLength(.001)
+optimizer.SetNumberOfIterations(2000)
+optimizer.SetScales([500, 1, 1, 1, 1])
 # ----------------------
 # initial Parameter
 # ----------------------
 
-initialTransform = itk.CenteredRigid2DTransform[itk.D, 2].New() # Instance de la classe de transformation choisie
+initialTransform = itk.CenteredRigid2DTransform[itk.D].New() # Instance de la classe de transformation choisie
 initialParameters = initialTransform.GetParameters() # Récupération des paramètres de la transformation
 
 initialParameters[0] = 0
-initialParameters[1] = moving_image.shape[0]/2
-initialParameters[2] = moving_image.shape[1]/2
+initialParameters[1] = itk.size(moving_image)[0]/2
+initialParameters[2] = itk.size(moving_image)[1]/2
 initialParameters[3] = 0
 initialParameters[4] = 0
 
@@ -65,7 +65,7 @@ registration_filter = itk.ImageRegistrationMethod[fixed_image_type, moving_image
 registration_filter.SetFixedImage(fixed_image) # Image de référence
 registration_filter.SetMovingImage(moving_image) # Image à recaler
 registration_filter.SetOptimizer(optimizer) # Optimiseur
-registration_filter.SetTransform(itk.CenteredRigid2DTransform[itk.D, 2].New()) # Transformation
+registration_filter.SetTransform(itk.CenteredRigid2DTransform[itk.D].New()) # Transformation
 registration_filter.SetInitialTransformParameters(initialParameters) #Application de la transformation initiale
 registration_filter.SetInterpolator(interpolator) # Interpolateur
 registration_filter.SetMetric(metric) # Métrique
@@ -86,3 +86,5 @@ itk.imwrite(output_image, os.path.join(image_output_dir, 'image_recalee2.png'))
 
 itk.imwrite(itk.AbsoluteValueDifferenceImageFilter(output_image, moving_image), os.path.join(image_output_dir,'moving_diff2.png'))
 itk.imwrite(itk.AbsoluteValueDifferenceImageFilter(output_image, fixed_image), os.path.join(image_output_dir,'fixed_diff2.png'))
+print(optimizer.GetCurrentIteration())
+print(optimizer.GetValue())
